@@ -21,7 +21,29 @@ function __extract_ng_handle_file
         set suffix $toks[-1]
     end
 
-    set -l extract_dir (__extract_ng_make_unique_name "./extract-$basename")
+    # I dislike the "extract" prefix to every extracted file,
+    # and how its name also inherits the compressed file's suffixes (extract-mydir.zip/)
+    #set -l extract_dir (__extract_ng_make_unique_name "./extract-$basename")
+
+    # So let's change it.
+
+    # Init variable to check for suffixes.
+    set -l basename_no_ext
+
+    # Lets first check if there's any suffixes in the name.
+
+    # If the file has a suffix,
+    if test -n "$suffix"
+        # Remove it from the extracted file's name.
+        set basename_no_ext (string replace -r "\.$suffix\$" '' $basename)
+    # If not,
+    else
+        # Just set the name as is.
+        set basename_no_ext $basename
+    end
+    # Finally, set the extracted archive to the un-suffixed name + its unique identifier
+    set -l extract_dir (__extract_ng_make_unique_name "./$basename_no_ext")
+
     set -l err 0
 
     echo "Will extract to $extract_dir."
