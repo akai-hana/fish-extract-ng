@@ -1,3 +1,9 @@
+---
+### Fork note:
+This fork makes it so that the extracted file's names is exactly equal to the compressed file, meaning there's no "extract" string prefix on the filename, or "compressed" file extension from the extracted file.
+
+---
+
 # fish-extract-ng
 
 A plugin for the fish shell: extract various archives intelligently with a single command.
