@@ -49,11 +49,13 @@ function __extract_ng_handle_file
     echo "Will extract to $extract_dir."
 
     while true
-        if not __extract_ng_traced mkdir $extract_dir
-            break
-        end
+        if test $suffix != xz
+            if not __extract_ng_traced mkdir $extract_dir
+                break
+            end
 
-        __extract_ng_traced pushd $extract_dir
+            __extract_ng_traced pushd $extract_dir
+        end
 
         switch $suffix
             case 7z
@@ -77,12 +79,21 @@ function __extract_ng_handle_file
             case zip
                 __extract_ng_traced unzip $realpath
                 set err $status
+            case xz
+                if set -qg __extract_ng_flag_dry_run
+                    __extract_ng_traced unxz -c $realpath
+                else
+                    __extract_ng_traced unxz -c $realpath >$extract_dir
+                end
+                set err $status
             case '*'
                 echo "$file: Unrecognized suffix: `$suffix'" > /dev/stderr
                 set err 1
         end
 
-        __extract_ng_traced popd
+        if test $suffix != xz
+            __extract_ng_traced popd
+        end
 
         if test $err -ne 0
             __extract_ng_traced rm -rf $extract_dir
